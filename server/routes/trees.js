@@ -23,6 +23,19 @@ const db = new sqlite3.Database(DATA_SOURCE, sqlite3.OPEN_READWRITE);
  *   - Ordered by the height_ft from tallest to shortest
  */
 // Your code here
+router.get('/', (req, res, next) => {
+  const sql = `SELECT id, tree, height_ft FROM trees
+                  ORDER BY height_ft DESC`;
+  const params = [];
+
+  db.all(sql, params, (err, rows) => {
+    if (err) {
+      return next(err);
+    }
+
+    res.json(rows);
+  });
+});
 
 /**
  * BASIC PHASE 3 - Retrieve one tree with the matching id
@@ -34,6 +47,18 @@ const db = new sqlite3.Database(DATA_SOURCE, sqlite3.OPEN_READWRITE);
  *   - Properties: id, tree, location, height_ft, ground_circumference_ft
  */
 // Your code here
+router.get('/:id', (req, res, next) => {
+  const sql = 'SELECT * FROM trees WHERE id = ?';
+  const params = [req.params.id];
+
+  db.get(sql, params, (err, row) => {
+    if (err) {
+      return next(err);
+    }
+
+    res.json(row);
+  });
+});
 
 /**
  * INTERMEDIATE PHASE 4 - INSERT tree row into the database
@@ -46,6 +71,26 @@ const db = new sqlite3.Database(DATA_SOURCE, sqlite3.OPEN_READWRITE);
  *   - Value: success
  */
 // Your code here
+router.post('/', (req, res, next) => {
+  const sql = `INSERT INTO trees (tree, location, height_ft, ground_circumference_ft)
+    VALUES (?, ?, ?, ?)`;
+  const params = [
+    req.body.name,
+    req.body.location,
+    req.body.height,
+    req.body.size,
+  ];
+
+  db.run(sql, params, (err) => {
+    if (err) {
+      return next(err);
+    }
+
+    res.json({
+      message: 'success',
+    });
+  });
+});
 
 /**
  * INTERMEDIATE PHASE 5 - DELETE a tree row from the database
@@ -58,6 +103,20 @@ const db = new sqlite3.Database(DATA_SOURCE, sqlite3.OPEN_READWRITE);
  *   - Value: success
  */
 // Your code here
+router.delete('/:id', (req, res, next) => {
+  const sql = 'DELETE FROM trees WHERE id = ?';
+  const params = [req.params.id];
+
+  db.run(sql, params, (err) => {
+    if (err) {
+      return next(err);
+    }
+
+    res.json({
+      message: 'success',
+    });
+  });
+});
 
 /**
  * INTERMEDIATE PHASE 6 - UPDATE a tree row in the database
@@ -70,6 +129,33 @@ const db = new sqlite3.Database(DATA_SOURCE, sqlite3.OPEN_READWRITE);
  *   - Value: success
  */
 // Your code here
+router.put('/:id', (req, res, next) => {
+  if (Number(req.body.id) !== Number(req.params.id)) {
+    return next(new Error('ids do not match'));
+  }
+
+  const sql = `UPDATE trees
+   SET
+     tree = ?, location = ?, height_ft = ?, ground_circumference_ft = ?
+   WHERE id = ?`;
+  const params = [
+    req.body.name,
+    req.body.location,
+    req.body.height,
+    req.body.size,
+    req.params.id,
+  ];
+
+  db.run(sql, params, (err) => {
+    if (err) {
+      return next(err);
+    }
+
+    res.json({
+      message: 'success',
+    });
+  });
+});
 
 // Export class - DO NOT MODIFY
 module.exports = router;

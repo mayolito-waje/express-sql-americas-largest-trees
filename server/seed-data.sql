@@ -10,6 +10,8 @@ CREATE TABLE trees (
   ground_circumference_ft NUMERIC
 );
 
+CREATE UNIQUE INDEX trees_unique ON trees(tree, location, height_ft, ground_circumference_ft);
+
 -- BASIC PHASE 1B - INSERT seed data
 -- Your code here
 INSERT INTO trees (tree, location, height_ft, ground_circumference_ft)
