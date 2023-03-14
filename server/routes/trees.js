@@ -8,6 +8,9 @@ const router = express.Router();
  *   - Database permissions: read/write records in tables
  */
 // Your code here
+const DATA_SOURCE = process.env.data_source;
+const sqlite3 = require('sqlite3');
+const db = new sqlite3.Database(DATA_SOURCE, sqlite3.OPEN_READWRITE);
 
 /**
  * BASIC PHASE 2, Step B - List of all trees in the database
